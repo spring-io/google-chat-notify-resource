@@ -1,0 +1,57 @@
+anchors:
+  notify-failure-params: &notify-failure-params
+    text: "<users/all>"
+    card_file: "git-repo/samples/simple/notify/card-failure.json"
+    text_file: "test/build-output.txt"
+  notify-success-params: &notify-success-params
+    card_file: "git-repo/samples/simple/notify/card-success.json"
+    text_file: "test/build-output.txt"
+
+resource_types:
+  - name: google-chat-notify
+    type: registry-image
+    source:
+      repository: "registry:5000/google-chat-notify-resource"
+      tag: latest
+      insecure: true
+
+resources:
+  - name: git-repo
+    type: git
+    source:
+      uri: "https://github.com/spring-io/google-chat-notify-resource"
+      branch: "main"
+  - name: notify
+    type: google-chat-notify
+    source:
+      url: ((WEBHOOK_URL))
+
+jobs:
+  - name: build
+    plan:
+      - get: git-repo
+      - do:
+        - task: build
+          file: "git-repo/samples/simple/tasks/build.yml"
+          on_failure:
+            do:
+              - put: notify
+                params:
+                  <<: *notify-failure-params
+      - put: notify
+        params:
+          <<: *notify-success-params
+  - name: build-fail
+    plan:
+      - get: git-repo
+      - do:
+        - task: build
+          file: "git-repo/samples/simple/tasks/build-fail.yml"
+        on_failure:
+          do:
+            - put: notify
+              params:
+                <<: *notify-failure-params
+      - put: notify
+        params:
+          <<: *notify-success-params

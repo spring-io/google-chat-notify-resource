@@ -1,0 +1,10 @@
+{
+  "source": {
+    "url": "https://chat.example.com"
+  },
+  "params": {
+    "text": "sample text",
+    "card_file": "card.json",
+    "text_file": "test-file.txt"
+  }
+}

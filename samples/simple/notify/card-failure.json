@@ -1,0 +1,21 @@
+[{
+  "cardId": "concourse",
+  "card": {
+    "sections": [
+      {
+        "widgets": [
+          {
+            "textParagraph": {
+              "text": "<b><font color=\"#FF0000\">FAILED!</font></b> <a href=\"http://localhost:8080/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}\">${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME}</a>"
+            }
+          },
+          {
+            "textParagraph": {
+              "text": "${TEXT_FILE_CONTENT}"
+            }
+          }
+        ]
+      }
+    ]
+  }
+}]
