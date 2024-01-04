@@ -27,6 +27,8 @@ import org.springframework.util.Assert;
  * Response from the {@code "/opt/resource/out"} script.
  *
  * @author Scott Frederick
+ * @param version the resource instance version
+ * @param metadata response metadata
  */
 public record OutResponse(Version version, List<Metadata> metadata) {
 

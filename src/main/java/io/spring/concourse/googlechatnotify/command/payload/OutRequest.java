@@ -26,6 +26,8 @@ import org.springframework.util.Assert;
  * Request to the {@code "/opt/resource/out"} script.
  *
  * @author Scott Frederick
+ * @param source the source configuration
+ * @param params configuration parameters
  */
 public record OutRequest(Source source, Params params) {
 
@@ -43,6 +45,10 @@ public record OutRequest(Source source, Params params) {
 
 	/**
 	 * Parameters for the {@link OutRequest}.
+	 *
+	 * @param text formatted text to send to the webhook
+	 * @param cardFile JSON card content to send to the webhook
+	 * @param textFile a text file that can be included in webhook content
 	 */
 	public record Params(String text, String cardFile, String textFile) {
 

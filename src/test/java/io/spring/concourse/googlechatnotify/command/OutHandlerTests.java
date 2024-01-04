@@ -73,7 +73,7 @@ class OutHandlerTests {
 	void handleWithNoParamsFails() {
 		OutRequest request = createRequest(null, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> this.handler.handle(request, ""))
-				.withMessageContaining("At least one of 'text', 'card_file', or 'text_file' must be provided");
+			.withMessageContaining("At least one of 'text', 'card_file', or 'text_file' must be provided");
 	}
 
 	@Test
@@ -113,7 +113,7 @@ class OutHandlerTests {
 		File textFile = createFile("info.txt", "text from file");
 		OutRequest request = createRequest(null, null, textFile.getAbsolutePath());
 		given(this.webHook.send("https://chat.example.com", WebhookMessage.from(Map.of("text", "text from file"))))
-				.willReturn(new WebhookResponse("200 OK", "test response"));
+			.willReturn(new WebhookResponse("200 OK", "test response"));
 		OutResponse response = this.handler.handle(request, "");
 		assertThat(response.metadata()).containsExactly(new Metadata("status", "200 OK"),
 				new Metadata("body", "test response"));

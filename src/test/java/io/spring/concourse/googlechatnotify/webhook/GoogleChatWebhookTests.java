@@ -40,7 +40,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Scott Frederick
  */
-@RestClientTest(value = GoogleChatWebhook.class, properties = {"ENV_KEY_1=value1", "ENV_KEY_2=value2"})
+@RestClientTest(value = GoogleChatWebhook.class, properties = { "ENV_KEY_1=value1", "ENV_KEY_2=value2" })
 class GoogleChatWebhookTests {
 
 	@Autowired
@@ -80,8 +80,8 @@ class GoogleChatWebhookTests {
 		List<Map<String, String>> jsonValue = List.of(Map.of("key1", "${ENV_KEY_1}", "key2", "${ENV_KEY_2}"));
 		this.server.expect(requestTo("https://chat.example.com/"))
 			.andExpect(method(HttpMethod.POST))
-				.andExpect(jsonPath("$.json_field[0].key1").value("value1"))
-				.andExpect(jsonPath("$.json_field[0].key2").value("value2"))
+			.andExpect(jsonPath("$.json_field[0].key1").value("value1"))
+			.andExpect(jsonPath("$.json_field[0].key2").value("value2"))
 			.andRespond(withSuccess("success", MediaType.TEXT_PLAIN));
 		WebhookResponse response = this.webhook.send("https://chat.example.com/",
 				WebhookMessage.from(Map.of("json_field", jsonValue)));

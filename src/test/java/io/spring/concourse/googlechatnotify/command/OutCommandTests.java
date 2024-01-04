@@ -16,9 +16,9 @@
 
 package io.spring.concourse.googlechatnotify.command;
 
-import io.spring.concourse.googlechatnotify.system.SystemInput;
 import io.spring.concourse.googlechatnotify.command.payload.OutRequest;
 import io.spring.concourse.googlechatnotify.command.payload.OutResponse;
+import io.spring.concourse.googlechatnotify.system.SystemInput;
 import io.spring.concourse.googlechatnotify.system.SystemOutput;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
