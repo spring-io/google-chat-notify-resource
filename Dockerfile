@@ -1,7 +1,7 @@
 FROM ubuntu:jammy-20231004
 
 ARG root=.
-ARG executable=build/native/nativeCompile/google-chat-notify
+ARG executable=target/google-chat-notify-resource
 
 COPY ${root}/assets/ /opt/resource/
 COPY ${executable} /artifact/google-chat-notify

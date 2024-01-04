@@ -13,8 +13,11 @@
 /code
 bin
 build
+target
 !/**/src/**/bin
 !/**/src/**/build
 build.log
 lib/
 !/assets/**
+samples/data
+samples/keys

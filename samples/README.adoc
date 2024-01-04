@@ -19,10 +19,12 @@ You should find that Concourse is running at http://127.0.0.1:8080[127.0.0.1:808
 === Push google-chat-notify-resource Image
 You need to push the `google-chat-notify-resource` image into the container registry.
 
-To build the project locally, build, and push the image:
+To build the project locally, first ensure you have the prerequisites for building a Spring Boot application to a native executable as documented in the https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#native-image.developing-your-first-application.native-build-tools[Spring Boot documentation].
+
+Then build and push the image:
 
 ----
-$ ./gradlew nativeCompile
+$ ./mvnw native:compile -Pnative
 $ docker build . --tag localhost:5000/google-chat-notify-resource
 $ docker push localhost:5000/google-chat-notify-resource
 ----
