@@ -16,7 +16,7 @@ This should start containers for Concourse and a Docker registry.
 You should find that Concourse is running at http://127.0.0.1:8080[127.0.0.1:8080] the registry should be running on port 5000.
 
 
-=== Push google-chat-notify-resource Image
+=== Push the google-chat-notify-resource image
 You need to push the `google-chat-notify-resource` image into the container registry.
 
 To build the project locally, first ensure you have the prerequisites for building a Spring Boot application to a native executable as documented in the https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#native-image.developing-your-first-application.native-build-tools[Spring Boot documentation].
@@ -47,23 +47,21 @@ $ fly --target sample set-pipeline -p sample -c simple/pipeline.yml -v WEBHOOK_U
 Browse to  http://127.0.0.1:8080/teams/main/pipelines/sample and login with `test`/`test` to see the pipeline.
 
 
-=== Unpause and trigger the job
+=== Unpause and trigger the jobs
 The newly deployed pipeline will be paused, so you'll either need to unpause it from the web UI or run:
 
 ----
 $ fly --target sample unpause-pipeline -p sample
 ----
 
-When the pipeline is active, you can manually trigger the `build` job.
+When the pipeline is active, you can manually trigger the `build` job to see a successful build message sent to the Google Chat space.
 
 ----
 $ fly --target sample trigger-job -j sample/build
 ----
 
+You can also manually trigger the `build-fail` job to see a failed build message sent to the Google Chat space.
 
-
-=== Inspect Artifactory
-Once the job has finished you can http://127.0.0.1:8081/artifactory[go back to Artifactory] and login with `admin`/`password`.
-Click on the "builds" tab and you should see the build that just ran.
-You can also browse the `example-repo-local` repository to see the deployed jar file.
-
+----
+$ fly --target sample trigger-job -j sample/build-fail
+----
