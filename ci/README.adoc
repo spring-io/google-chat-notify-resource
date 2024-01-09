@@ -1,0 +1,18 @@
+== Concourse pipeline
+
+Ensure that you've setup the `google-chat-notify-resource` target and can login.
+
+[source]
+----
+$ fly -t google-chat-notify-resource login -n google-chat-notify-resource -c https://ci.spring.io
+----
+
+The pipeline can be deployed using the following command:
+
+[source]
+----
+$ fly -t google-chat-notify-resource set-pipeline -p google-chat-notify-resource -c ci/pipeline.yml -l ci/parameters.yml
+----
+
+NOTE: This assumes that you have Vault integration configured with the appropriate
+secrets.

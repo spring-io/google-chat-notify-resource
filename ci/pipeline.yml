@@ -1,0 +1,124 @@
+resource_types:
+- name: registry-image
+  type: registry-image
+  source:
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+    repository: concourse/registry-image-resource
+    tag: 1.7.1
+resources:
+- name: git-repo
+  type: git
+  icon: github
+  source:
+    uri: https://github.com/scottfrederick/google-chat-notify-resource
+    username: ((github-username))
+    password: ((github-password))
+    branch: main
+    ignore_paths: ["ci/images/*"]
+- name: ci-images-git-repo
+  type: git
+  icon: github
+  source:
+    uri: https://github.com/scottfrederick/google-chat-notify-resource
+    branch: main
+    paths: ["ci/images/*"]
+- name: ci-image
+  type: registry-image
+  icon: docker
+  source:
+    repository: springci/google-chat-notify-resource-ci
+    tag: main
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+- name: google-chat-notify-resource-image
+  type: registry-image
+  icon: docker
+  source:
+    repository: springio/google-chat-notify-resource
+    username: ((docker-hub-username))
+    password: ((docker-hub-password))
+- name: github-release
+  type: github-release
+  icon: briefcase-download
+  source:
+    owner: spring-io
+    repository: google-chat-notify-resource
+    access_token: ((github-ci-release-token))
+jobs:
+- name: build-ci-image
+  serial: true
+  plan:
+  - get: ci-images-git-repo
+    trigger: true
+  - get: git-repo
+  - task: build-ci-image
+    privileged: true
+    file: git-repo/ci/tasks/build-ci-image.yml
+    output_mapping:
+      image: ci-image
+    vars:
+      ci-image-name: ci-image
+  - put: ci-image
+    params:
+      image: ci-image/image.tar
+- name: build
+  serial: true
+  public: true
+  plan:
+  - get: ci-image
+  - get: git-repo
+    trigger: true
+  - task: build-project
+    privileged: true
+    image: ci-image
+    file: git-repo/ci/tasks/build-project.yml
+  - load_var: artifact-version
+    file: built-artifact/version
+    reveal: true
+  - task: build-google-chat-notify-resource-image
+    privileged: true
+    file: git-repo/ci/tasks/build-resource-image.yml
+    output_mapping:
+      image: google-chat-notify-resource-image
+  - put: google-chat-notify-resource-image
+    params:
+      version: ((.:artifact-version))
+      image: google-chat-notify-resource-image/image.tar
+- name: release
+  serial: true
+  plan:
+  - get: ci-image
+  - get: git-repo
+    passed: [build]
+    trigger: false
+  - task: release
+    image: ci-image
+    file: git-repo/ci/tasks/release.yml
+  - load_var: artifact-version
+    file: built-artifact/version
+    reveal: true
+  - task: build-google-chat-notify-resource-image
+    privileged: true
+    file: git-repo/ci/tasks/build-resource-image.yml
+    output_mapping:
+      image: google-chat-notify-resource-image
+  - task: generate-changelog
+    file: git-repo/ci/tasks/generate-changelog.yml
+  - put: git-repo
+    params:
+      repository: release-git-repo
+  - put: google-chat-notify-resource-image
+    params:
+      version: ((.:artifact-version))
+      image: google-chat-notify-resource-image/image.tar
+  - put: github-release
+    params:
+      name: generated-changelog/tag
+      tag: generated-changelog/tag
+      body: generated-changelog/changelog.md
+groups:
+- name: "builds"
+  jobs: ["build", "release"]
+- name: "ci-image"
+  jobs: ["build-ci-image"]
