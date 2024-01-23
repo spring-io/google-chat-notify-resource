@@ -5,7 +5,7 @@ To run the sample pipeline using Docker Compose, follow these steps:
 === Install Docker compose
 Follow https://docs.docker.com/compose/install/[these instructions] to install Docker Compose if you've not already done so in the past.
 
-=== Start Concouse CI
+=== Start Concourse CI
 From this directory, run:
 
 ----
