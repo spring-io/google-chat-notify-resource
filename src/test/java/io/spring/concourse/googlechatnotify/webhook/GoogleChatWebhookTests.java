@@ -16,7 +16,6 @@
 
 package io.spring.concourse.googlechatnotify.webhook;
 
-import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Scott Frederick
  */
-@RestClientTest(value = GoogleChatWebhook.class, properties = { "ENV_KEY_1=value1", "ENV_KEY_2=value2" })
+@RestClientTest(value = GoogleChatWebhook.class, properties = { "ENV_KEY_1=value1", "ENV_KEY_2=value2", "ENV_KEY_QUOTED=env with \"quotes\"" })
 class GoogleChatWebhookTests {
 
 	@Autowired
@@ -63,28 +62,42 @@ class GoogleChatWebhookTests {
 
 	@Test
 	void webhookCallWithJsonFieldSucceeds() {
-		List<Map<String, String>> jsonValue = List.of(Map.of("key1", "value1", "key2", "value2"));
+		Map<String, Object> jsonValue = Map.of("key1", "value1", "key2", "value2");
 		this.server.expect(requestTo("https://chat.example.com/"))
 			.andExpect(method(HttpMethod.POST))
-			.andExpect(jsonPath("$.json_field[0].key1").value("value1"))
-			.andExpect(jsonPath("$.json_field[0].key2").value("value2"))
+			.andExpect(jsonPath("$.key1").value("value1"))
+			.andExpect(jsonPath("$.key2").value("value2"))
 			.andRespond(withSuccess("success", MediaType.TEXT_PLAIN));
 		WebhookResponse response = this.webhook.send("https://chat.example.com/",
-				WebhookMessage.from(Map.of("json_field", jsonValue)));
+				WebhookMessage.from(jsonValue));
 		assertThat(response.statusCode()).isEqualTo("200 OK");
 		assertThat(response.body()).isEqualTo("success");
 	}
 
 	@Test
 	void webhookCallWithEnvironmentVariablesSucceeds() {
-		List<Map<String, String>> jsonValue = List.of(Map.of("key1", "${ENV_KEY_1}", "key2", "${ENV_KEY_2}"));
+		Map<String, Object> jsonValue = Map.of("key1", "${ENV_KEY_1}", "key2", "${ENV_KEY_2}");
 		this.server.expect(requestTo("https://chat.example.com/"))
 			.andExpect(method(HttpMethod.POST))
-			.andExpect(jsonPath("$.json_field[0].key1").value("value1"))
-			.andExpect(jsonPath("$.json_field[0].key2").value("value2"))
+			.andExpect(jsonPath("$.key1").value("value1"))
+			.andExpect(jsonPath("$.key2").value("value2"))
 			.andRespond(withSuccess("success", MediaType.TEXT_PLAIN));
 		WebhookResponse response = this.webhook.send("https://chat.example.com/",
-				WebhookMessage.from(Map.of("json_field", jsonValue)));
+				WebhookMessage.from(jsonValue));
+		assertThat(response.statusCode()).isEqualTo("200 OK");
+		assertThat(response.body()).isEqualTo("success");
+	}
+
+	@Test
+	void webhookCallWithQuotedJsonFieldSucceeds() {
+		Map<String, Object> jsonValue = Map.of("key1", "value with \"quotes\"", "key2", "${ENV_KEY_QUOTED}");
+		this.server.expect(requestTo("https://chat.example.com/"))
+			.andExpect(method(HttpMethod.POST))
+			.andExpect(jsonPath("$.key1").value("value with \"quotes\""))
+			.andExpect(jsonPath("$.key2").value("env with \"quotes\""))
+			.andRespond(withSuccess("success", MediaType.TEXT_PLAIN));
+		WebhookResponse response = this.webhook.send("https://chat.example.com/",
+				WebhookMessage.from(jsonValue));
 		assertThat(response.statusCode()).isEqualTo("200 OK");
 		assertThat(response.body()).isEqualTo("success");
 	}

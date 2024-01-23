@@ -50,13 +50,13 @@ public class GoogleChatWebhook implements OutgoingWebhook {
 
 	public WebhookResponse send(String url, WebhookMessage message) {
 		try {
+			message.resolvePlaceholders(environment);
 			String messageString = this.objectMapper.writeValueAsString(message);
-			String resolved = this.environment.resolvePlaceholders(messageString);
-			console.log("Sending message '" + resolved + "' to webhook");
+			console.log("Sending message '" + messageString + "' to webhook");
 			String body = this.restClient.post()
 				.uri(url)
 				.header("accept", "application/json; charset=UTF-8")
-				.body(resolved)
+				.body(messageString)
 				.retrieve()
 				.body(String.class);
 			return new WebhookResponse(HttpStatus.OK.toString(), body);

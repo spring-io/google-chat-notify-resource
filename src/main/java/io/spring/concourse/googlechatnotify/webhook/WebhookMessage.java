@@ -19,6 +19,8 @@ package io.spring.concourse.googlechatnotify.webhook;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.core.env.Environment;
+
 /**
  * A response from an outgoing webhook call.
  *
@@ -30,6 +32,23 @@ public class WebhookMessage extends HashMap<String, Object> {
 		WebhookMessage message = new WebhookMessage();
 		message.putAll(map);
 		return message;
+	}
+
+	void resolvePlaceholders(Environment environment) {
+		resolvePlaceholders(this, environment);
+	}
+
+	@SuppressWarnings("unchecked")
+	private void resolvePlaceholders(Map<String, Object> map, Environment environment) {
+		for (Entry<String, Object> entry : map.entrySet()) {
+			if (Map.class.isAssignableFrom(entry.getValue().getClass())) {
+				resolvePlaceholders((Map<String, Object>) entry.getValue(), environment);
+			}
+			if (entry.getValue().getClass().isAssignableFrom(String.class)) {
+				map.replace(entry.getKey(), environment.resolvePlaceholders(entry.getValue().toString()));
+			}
+		}
+
 	}
 
 }
