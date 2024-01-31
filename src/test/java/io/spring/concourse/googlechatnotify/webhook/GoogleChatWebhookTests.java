@@ -39,7 +39,8 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Scott Frederick
  */
-@RestClientTest(value = GoogleChatWebhook.class, properties = { "ENV_KEY_1=value1", "ENV_KEY_2=value2", "ENV_KEY_QUOTED=env with \"quotes\"" })
+@RestClientTest(value = GoogleChatWebhook.class,
+		properties = { "ENV_KEY_1=value1", "ENV_KEY_2=value2", "ENV_KEY_QUOTED=env with \"quotes\"" })
 class GoogleChatWebhookTests {
 
 	@Autowired
@@ -68,8 +69,7 @@ class GoogleChatWebhookTests {
 			.andExpect(jsonPath("$.key1").value("value1"))
 			.andExpect(jsonPath("$.key2").value("value2"))
 			.andRespond(withSuccess("success", MediaType.TEXT_PLAIN));
-		WebhookResponse response = this.webhook.send("https://chat.example.com/",
-				WebhookMessage.from(jsonValue));
+		WebhookResponse response = this.webhook.send("https://chat.example.com/", WebhookMessage.from(jsonValue));
 		assertThat(response.statusCode()).isEqualTo("200 OK");
 		assertThat(response.body()).isEqualTo("success");
 	}
@@ -82,8 +82,7 @@ class GoogleChatWebhookTests {
 			.andExpect(jsonPath("$.key1").value("value1"))
 			.andExpect(jsonPath("$.key2").value("value2"))
 			.andRespond(withSuccess("success", MediaType.TEXT_PLAIN));
-		WebhookResponse response = this.webhook.send("https://chat.example.com/",
-				WebhookMessage.from(jsonValue));
+		WebhookResponse response = this.webhook.send("https://chat.example.com/", WebhookMessage.from(jsonValue));
 		assertThat(response.statusCode()).isEqualTo("200 OK");
 		assertThat(response.body()).isEqualTo("success");
 	}
@@ -96,8 +95,7 @@ class GoogleChatWebhookTests {
 			.andExpect(jsonPath("$.key1").value("value with \"quotes\""))
 			.andExpect(jsonPath("$.key2").value("env with \"quotes\""))
 			.andRespond(withSuccess("success", MediaType.TEXT_PLAIN));
-		WebhookResponse response = this.webhook.send("https://chat.example.com/",
-				WebhookMessage.from(jsonValue));
+		WebhookResponse response = this.webhook.send("https://chat.example.com/", WebhookMessage.from(jsonValue));
 		assertThat(response.statusCode()).isEqualTo("200 OK");
 		assertThat(response.body()).isEqualTo("success");
 	}
